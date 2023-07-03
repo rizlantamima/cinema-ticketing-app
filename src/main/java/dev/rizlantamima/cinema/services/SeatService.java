@@ -10,7 +10,7 @@ public interface SeatService {
 
     List<Seat> getSoldSeats();
 
-    void init(Integer column, Integer row);
+    void initSeat(Integer column, Integer row);
     int getTotalFreeSeats();
 
     int getTotalSoldSeats();

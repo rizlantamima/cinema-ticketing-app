@@ -1,12 +1,18 @@
 package dev.rizlantamima.cinema;
 
-import dev.rizlantamima.cinema.configurations.I18n;
+import dev.rizlantamima.cinema.presentations.CommonPresentation;
+import dev.rizlantamima.cinema.presentations.cli.CliPresentation;
+import dev.rizlantamima.cinema.repositories.CinemaRepository;
+import dev.rizlantamima.cinema.repositories.CinemaRepositoryImpl;
 import dev.rizlantamima.cinema.repositories.SeatRepository;
 import dev.rizlantamima.cinema.repositories.SeatRepositoryInMemoryImpl;
-import dev.rizlantamima.cinema.utils.BannerUtils;
-
-import java.util.Locale;
-import java.util.ResourceBundle;
+import dev.rizlantamima.cinema.services.CinemaService;
+import dev.rizlantamima.cinema.services.CinemaServiceImpl;
+import dev.rizlantamima.cinema.services.SeatService;
+import dev.rizlantamima.cinema.services.SeatServiceImpl;
+import jakarta.validation.Validation;
+import jakarta.validation.Validator;
+import jakarta.validation.ValidatorFactory;
 
 /**
  * Hello world!
@@ -16,15 +22,16 @@ public class App
 {
     public static void main( String[] args )
     {
+        ValidatorFactory validatorFactory = Validation.buildDefaultValidatorFactory();
+        Validator validator = validatorFactory.getValidator();
+
+        CinemaRepository cinemaRepository = new CinemaRepositoryImpl(validator);
         SeatRepository seatRepository = new SeatRepositoryInMemoryImpl();
-//        BannerUtils.displayBanner();
-//        Locale[] availableLocale = availableLocale();
-//        for (int i = 0; i < availableLocale.length ; i++) {
-//            System.out.println((i+1) + ". " + availableLocale[i].getDisplayName());
-//        }
-//        I18n.setLocale(new Locale("su", "ID"));
-//        ResourceBundle resourceBundle = I18n.getResources("messages");
-//        System.out.println( resourceBundle.getString("welcome") );
+        CinemaService cinemaService = new CinemaServiceImpl(cinemaRepository);
+        SeatService seatService = new SeatServiceImpl(seatRepository);
+        CommonPresentation presentation = new CliPresentation(cinemaService,seatService);
+        presentation.init();
+        validatorFactory.close();
     }
 
 
